@@ -1,0 +1,93 @@
+spring:
+  application:
+    name: JStore
+
+  # File Upload Configuration
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB      # Maximum file size per request
+      max-request-size: 100MB   # Maximum request size (file + metadata)
+
+  # Supabase PostgreSQL Configuration (Direct Connection/Session Mode)
+  datasource:
+    # Using Direct Connection (port 5432) for full Hibernate Session support
+    # This enables stateful transactions needed for Hibernate entity management
+    url: jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
+    username: postgres.doxksbweeaxtewrlcvat
+    password: QbOaG8jWXkphbZnQ
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # JPA/Hibernate Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update  # Temporarily set to update to add missing columns (changed from validate for testing)
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        # Batch processing optimization
+        jdbc:
+          batch_size: 20
+          time_zone: UTC
+        order_inserts: true
+        order_updates: true
+
+# Application-specific JWT Configuration
+# NOTE: We are using OUR OWN JWT authentication (not Supabase Auth)
+# This secret is for signing OUR application's JWT tokens
+app:
+  # TODO: Generate a secure Base64-encoded secret (256+ bits)
+  # For now, using a temporary secret - CHANGE THIS IN PRODUCTION!
+  # To generate: openssl rand -base64 64
+  jwtSecret: ${JWT_SECRET:dG1wU2VjcmV0S2V5Rm9yRGV2ZWxvcG1lbnRPbmx5Q2hhbmdlVGhpc0luUHJvZHVjdGlvblBsZWFzZTEyMzQ1Njc4OTA=}
+  jwtExpirationMs: 86400000  # 24 hours in milliseconds
+
+# Supabase Storage Configuration
+supabase:
+  url: https://doxksbweeaxtewrlcvat.supabase.co
+  # Service role key for backend file uploads
+  # IMPORTANT: Keep this secret! Use environment variable in production
+  # Get this key from: Supabase Dashboard → Project Settings → API → service_role key
+  key: ${SUPABASE_SERVICE_ROLE_KEY:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRveGtzYndlZWF4dGV3cmxjdmF0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Mjk3MDU3OCwiZXhwIjoyMDc4NTQ2NTc4fQ.1SJ1rFezlhoVKEN2Znfp3hPFDwtp3NVVcy1qsFoKWFw}
+  storage:
+    buckets:
+      images: product-images
+      videos: product-videos
+    limits:
+      maxImageSize: 5242880   # 5 MB in bytes
+      maxVideoSize: 52428800  # 50 MB in bytes
+    allowedTypes:
+      images:
+        - image/jpeg
+        - image/png
+        - image/webp
+        - image/gif
+      videos:
+        - video/mp4
+        - video/webm
+
+# Server Configuration
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.store.main: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.security: DEBUG

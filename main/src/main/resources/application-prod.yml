@@ -1,0 +1,19 @@
+# Production Environment Configuration
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Never auto-update schema in production
+    show-sql: false
+
+logging:
+  level:
+    root: WARN
+    com.store.main: INFO
+    org.hibernate.SQL: WARN
+    org.springframework.security: INFO
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: always

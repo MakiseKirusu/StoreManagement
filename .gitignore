@@ -1,0 +1,60 @@
+# Backend (Spring Boot)
+main/target/
+main/.mvn/
+main/.classpath
+main/.project
+main/.settings/
+main/*.iml
+main/.idea/
+main/logs/
+
+# Frontend (Node.js)
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.DS_Store
+
+# Dependencies
+node_modules/
+package-lock.json
+npm-debug.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+*.pid
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Test files
+*.class
+Test*.java
+test*.js
+
+# Build artifacts
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# OS files
+.DS_Store
+Thumbs.db
