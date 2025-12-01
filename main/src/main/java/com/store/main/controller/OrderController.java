@@ -1,22 +1,25 @@
 package com.store.main.controller;
 
-import com.store.main.dto.request.CheckoutRequest;
-import com.store.main.model.Order;
-import com.store.main.service.OrderService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Controller for customer order operations.
- * Handles checkout, viewing orders, and cancellations.
- */
+import com.store.main.dto.request.CheckoutRequest;
+import com.store.main.model.Order;
+import com.store.main.service.OrderService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -25,9 +28,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    /**
-     * Checkout - create an order from the cart.
-     */
     @PostMapping("/checkout")
     public ResponseEntity<Order> checkout(
             @Valid @RequestBody CheckoutRequest request,
@@ -37,9 +37,6 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
-    /**
-     * Get all orders for the current user.
-     */
     @GetMapping
     public ResponseEntity<Page<Order>> getUserOrders(
             Pageable pageable,
@@ -49,9 +46,6 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-    /**
-     * Get a specific order by ID.
-     */
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(
             @PathVariable Long id,
@@ -60,10 +54,7 @@ public class OrderController {
         Order order = orderService.getOrderById(username, id);
         return ResponseEntity.ok(order);
     }
-
-    /**
-     * Cancel an order.
-     */
+    
     @PostMapping("/{id}/cancel")
     public ResponseEntity<Order> cancelOrder(
             @PathVariable Long id,

@@ -1,20 +1,29 @@
 package com.store.main.model;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.store.main.model.enums.MediaType;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
-
-/**
- * Entity representing product media (images and videos).
- * Supports multiple media files per product with ordering.
- */
+//Entity represents product media. this shows which media files are supported per product
 @Entity
 @Table(name = "product_media", indexes = {
     @Index(name = "idx_product_media_product_id", columnList = "product_id"),
@@ -59,10 +68,7 @@ public class ProductMedia {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    /**
-     * Constructor for creating new product media
-     */
+    
     public ProductMedia(Product product, MediaType mediaType, String url, String altText, Integer displayOrder) {
         this.product = product;
         this.mediaType = mediaType;

@@ -1,21 +1,22 @@
 package com.store.main.security;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.util.Date;
-
-/**
- * Utility class for JWT token operations.
- * Handles token generation, parsing, and validation.
- */
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+//Utility class for JWT token operations, handles token generation, parsing, and validation
 @Component
 public class JwtUtils {
 
@@ -26,20 +27,11 @@ public class JwtUtils {
 
     @Value("${app.jwtExpirationMs}")
     private int jwtExpirationMs;
-
-    /**
-     * Get the signing key from the secret.
-     */
+//Get signing key from secret
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
-    /**
-     * Generate JWT token from authentication.
-     * @param authentication Spring Security authentication object
-     * @return JWT token string
-     */
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
@@ -50,12 +42,6 @@ public class JwtUtils {
                 .signWith(getSigningKey())
                 .compact();
     }
-
-    /**
-     * Generate JWT token from username.
-     * @param username the username
-     * @return JWT token string
-     */
     public String generateTokenFromUsername(String username) {
         return Jwts.builder()
                 .subject(username)
@@ -64,12 +50,6 @@ public class JwtUtils {
                 .signWith(getSigningKey())
                 .compact();
     }
-
-    /**
-     * Extract username from JWT token.
-     * @param token JWT token string
-     * @return username
-     */
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -78,12 +58,6 @@ public class JwtUtils {
                 .getPayload()
                 .getSubject();
     }
-
-    /**
-     * Validate JWT token.
-     * @param authToken JWT token string
-     * @return true if valid, false otherwise
-     */
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parser()

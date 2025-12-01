@@ -1,9 +1,5 @@
 package com.store.main.exception;
-
-/**
- * Exception thrown when trying to create a resource that already exists.
- * Results in HTTP 409 Conflict response.
- */
+//Already exists = 409 error
 public class DuplicateResourceException extends RuntimeException {
 
     public DuplicateResourceException(String message) {

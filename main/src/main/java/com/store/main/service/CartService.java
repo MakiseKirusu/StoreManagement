@@ -17,15 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-
-/**
- * Service for managing shopping carts.
- * Handles adding, removing, and updating cart items.
- */
+//Service for managing shopping carts, handling adding, removing and updating cart items
 @Service
 @RequiredArgsConstructor
 public class CartService {
-
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
@@ -34,10 +29,7 @@ public class CartService {
 
     @PersistenceContext
     private EntityManager entityManager;
-
-    /**
-     * Get or create a cart for the user.
-     */
+//Get or create a cart
     @Transactional
     public Cart getOrCreateCart(String username) {
         User user = userRepository.findByUsername(username)
@@ -50,10 +42,7 @@ public class CartService {
                     return cartRepository.save(cart);
                 });
     }
-
-    /**
-     * Get the user's cart.
-     */
+//Get the user's cart
     public Cart getCart(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
@@ -61,36 +50,26 @@ public class CartService {
         return cartRepository.findByUserWithItems(user)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart", "user", username));
     }
-
-    /**
-     * Add an item to the cart or update quantity if it already exists.
-     */
+//Add an item to the cart or update quantity 
     @Transactional
     public Cart addItemToCart(String username, CartItemRequest request) {
-        // Validate quantity
         if (request.getQuantity() <= 0) {
             throw new BadRequestException("Quantity must be positive");
         }
 
-        // Get or create cart
         Cart cart = getOrCreateCart(username);
-
-        // Get product and check stock
         Product product = productService.getProductById(request.getProductId());
 
         if (!inventoryService.hasStock(product.getId(), request.getQuantity())) {
             throw new BadRequestException("Insufficient stock for product: " + product.getName());
         }
 
-        // Check if item already exists in cart
         CartItem existingItem = cartItemRepository.findByCartAndProduct(cart, product)
                 .orElse(null);
 
         if (existingItem != null) {
-            // Update quantity
             int newQuantity = existingItem.getQuantity() + request.getQuantity();
 
-            // Check stock for new quantity
             if (!inventoryService.hasStock(product.getId(), newQuantity)) {
                 throw new BadRequestException("Insufficient stock. Available: " +
                     inventoryService.getInventoryByProductId(product.getId()).getStockQuantity());
@@ -99,28 +78,21 @@ public class CartService {
             existingItem.setQuantity(newQuantity);
             cartItemRepository.save(existingItem);
         } else {
-            // Create new cart item and establish bidirectional relationship
             CartItem cartItem = new CartItem();
             cartItem.setCart(cart);
             cartItem.setProduct(product);
             cartItem.setQuantity(request.getQuantity());
-
-            // Add to cart's collection (maintain bidirectional relationship)
             cart.getItems().add(cartItem);
-
-            // Save through cart (cascade will handle cart item)
+            //Save through cart (cascade will handle cart item)
             cartRepository.save(cart);
         }
 
-        // Return fresh cart with items
+        //Return fresh cart with items
         return cartRepository.findByIdWithItems(cart.getId()).orElseThrow(
             () -> new ResourceNotFoundException("Cart", "id", cart.getId())
         );
     }
-
-    /**
-     * Update the quantity of a cart item.
-     */
+//Update the quantity of a cart item
     @Transactional
     public Cart updateCartItemQuantity(String username, Long productId, Integer quantity) {
         if (quantity <= 0) {
@@ -133,7 +105,6 @@ public class CartService {
         CartItem cartItem = cartItemRepository.findByCartAndProduct(cart, product)
                 .orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId", productId));
 
-        // Check stock
         if (!inventoryService.hasStock(productId, quantity)) {
             throw new BadRequestException("Insufficient stock. Available: " +
                 inventoryService.getInventoryByProductId(productId).getStockQuantity());
@@ -144,10 +115,6 @@ public class CartService {
 
         return cart;
     }
-
-    /**
-     * Remove an item from the cart.
-     */
     @Transactional
     public Cart removeItemFromCart(String username, Long productId) {
         Cart cart = getCart(username);
@@ -161,10 +128,6 @@ public class CartService {
 
         return cartRepository.save(cart);
     }
-
-    /**
-     * Clear all items from the cart.
-     */
     @Transactional
     public void clearCart(String username) {
         Cart cart = getCart(username);
@@ -172,10 +135,7 @@ public class CartService {
         cart.getItems().clear();
         cartRepository.save(cart);
     }
-
-    /**
-     * Calculate the total price of the cart.
-     */
+    
     public BigDecimal calculateCartTotal(Cart cart) {
         return cart.getItems().stream()
                 .map(item -> item.getProduct().getPrice()

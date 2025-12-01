@@ -1,9 +1,5 @@
 package com.store.main.exception;
-
-/**
- * Exception thrown when a request contains invalid data.
- * Results in HTTP 400 Bad Request response.
- */
+//Invalid data = 404 error
 public class BadRequestException extends RuntimeException {
 
     public BadRequestException(String message) {

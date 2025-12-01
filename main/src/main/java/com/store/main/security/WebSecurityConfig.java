@@ -6,21 +6,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-/**
- * Spring Security configuration for JWT authentication.
- * Configures authentication, authorization, and JWT filter chain.
- */
+//Spring Security config (authentication, authorization and JWT filter) for JWT authentication
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)  // Enable @PreAuthorize annotations
@@ -31,18 +27,12 @@ public class WebSecurityConfig {
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
-
-    /**
-     * Create the JWT authentication filter bean.
-     */
+//Create JWT authentication filter bean
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
-
-    /**
-     * Configure the authentication provider with UserDetailsService and password encoder.
-     */
+//Configure the authentication provider with UserDetails and password encoder
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -50,74 +40,64 @@ public class WebSecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
-    /**
-     * Expose AuthenticationManager as a bean.
-     */
+//Expose AuthenticationManager as a bean.
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
-    /**
-     * Password encoder bean using BCrypt.
-     */
+//Ise BCrypt to encode passwords
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    /**
-     * Main security filter chain configuration.
-     * Defines which endpoints require authentication and which are public.
-     */
+//Main security filter chain config, defines which endpoints require authentication and which don't
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Disable CSRF (not needed for stateless JWT authentication)
+                //Disable CSRF (not needed for stateless JWT authentication)
                 .csrf(csrf -> csrf.disable())
 
-                // Enable CORS with default settings (uses CorsFilter bean)
+                //Enable CORS with default settings (uses CorsFilter bean)
                 .cors(Customizer.withDefaults())
 
-                // Handle unauthorized access
+                //Handle unauthorized access
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(unauthorizedHandler))
 
-                // Stateless session management (no sessions stored on server)
+                //Stateless session management (no sessions stored on server)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // Configure endpoint authorization
+                //Configure endpoint authorization
                 .authorizeHttpRequests(auth -> auth
                         // Allow all OPTIONS requests (CORS preflight)
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // Public endpoints (no authentication required)
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/error").permitAll()
+                    .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/api/public/**").permitAll()
+                    .requestMatchers("/error").permitAll()
                         // Swagger/OpenAPI documentation endpoints
-                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                    .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         // Public review endpoints (viewing reviews and ratings)
-                        .requestMatchers("/api/reviews/product/**").permitAll()
+                    .requestMatchers("/api/reviews/product/**").permitAll()
 
                         // Admin-only endpoints
-                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "STAFF")
+                    .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "STAFF")
 
                         // Customer endpoints
-                        .requestMatchers("/api/cart/**").hasRole("CUSTOMER")
-                        .requestMatchers("/api/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
-                        .requestMatchers("/api/notifications/**").authenticated()
+                    .requestMatchers("/api/cart/**").hasRole("CUSTOMER")
+                    .requestMatchers("/api/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
+                    .requestMatchers("/api/notifications/**").authenticated()
 
                         // All other endpoints require authentication
-                        .anyRequest().authenticated()
+                    .anyRequest().authenticated()
                 );
 
-        // Set authentication provider
+        //Set authentication provider
         http.authenticationProvider(authenticationProvider());
 
-        // Add JWT filter before UsernamePasswordAuthenticationFilter
+        //Add JWT filter before UsernamePasswordAuthenticationFilter
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

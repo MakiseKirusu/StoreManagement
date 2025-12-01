@@ -116,14 +116,9 @@ public class AdminMediaController {
             throw new BadRequestException("Failed to upload video: " + e.getMessage());
         }
     }
-
-    /**
-     * Get all media for a product
-     * GET /api/admin/media/products/{productId}
-     */
+//Get all media for a product, GET /api/admin/media/products/{productId}
     @GetMapping("/products/{productId}")
     public ResponseEntity<List<ProductMedia>> getProductMedia(@PathVariable Long productId) {
-        // Verify product exists
         if (!productRepository.existsById(productId)) {
             throw new ResourceNotFoundException("Product", "id", productId);
         }
@@ -132,20 +127,15 @@ public class AdminMediaController {
         return ResponseEntity.ok(media);
     }
 
-    /**
-     * Delete a media file
-     * DELETE /api/admin/media/{mediaId}
-     */
+    //Delete a media file, DELETE /api/admin/media/{mediaId}
+
     @DeleteMapping("/{mediaId}")
     public ResponseEntity<Map<String, String>> deleteMedia(@PathVariable Long mediaId) {
         ProductMedia media = mediaRepository.findById(mediaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Media", "id", mediaId));
 
         try {
-            // Delete from Supabase Storage
             storageService.deleteFile(media.getUrl());
-
-            // Delete from database
             mediaRepository.delete(media);
 
             log.info("Media deleted successfully: {}", mediaId);
@@ -159,7 +149,7 @@ public class AdminMediaController {
             throw new BadRequestException("Failed to delete media: " + e.getMessage());
         }
     }
-
+//Update media metadata, PUT /api/admin/media/(mediaId)
     /**
      * Update media metadata (alt text, display order)
      * PUT /api/admin/media/{mediaId}

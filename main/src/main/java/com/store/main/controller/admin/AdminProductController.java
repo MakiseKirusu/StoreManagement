@@ -17,10 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
-/**
- * Admin controller for managing products and inventory.
- * Only accessible by users with ADMIN or STAFF roles.
- */
 @RestController
 @RequestMapping("/api/admin/products")
 @RequiredArgsConstructor
@@ -29,19 +25,12 @@ public class AdminProductController {
 
     private final ProductService productService;
     private final InventoryService inventoryService;
-
-    /**
-     * Get all products with pagination.
-     */
     @GetMapping
     public ResponseEntity<Page<Product>> getAllProducts(Pageable pageable) {
         Page<Product> products = productService.getAllProducts(pageable);
         return ResponseEntity.ok(products);
     }
 
-    /**
-     * Search products by filters.
-     */
     @GetMapping("/search")
     public ResponseEntity<Page<Product>> searchProducts(
             @RequestParam(required = false) String name,
@@ -54,27 +43,18 @@ public class AdminProductController {
         return ResponseEntity.ok(products);
     }
 
-    /**
-     * Get a product by ID.
-     */
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         Product product = productService.getProductById(id);
         return ResponseEntity.ok(product);
     }
 
-    /**
-     * Create a new product.
-     */
     @PostMapping
     public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductRequest request) {
         Product product = productService.createProduct(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
-    /**
-     * Update an existing product.
-     */
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(
             @PathVariable Long id,
@@ -83,29 +63,17 @@ public class AdminProductController {
         return ResponseEntity.ok(product);
     }
 
-    /**
-     * Delete a product by ID.
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponse> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok(new MessageResponse("Product deleted successfully!"));
     }
-
-    // ==================== Inventory Management ====================
-
-    /**
-     * Get inventory for a product.
-     */
+    //Inventory management
     @GetMapping("/{productId}/inventory")
     public ResponseEntity<Inventory> getInventory(@PathVariable Long productId) {
         Inventory inventory = inventoryService.getInventoryByProductId(productId);
         return ResponseEntity.ok(inventory);
     }
-
-    /**
-     * Update inventory quantity (set absolute quantity).
-     */
     @PutMapping("/{productId}/inventory")
     public ResponseEntity<Inventory> updateInventory(
             @PathVariable Long productId,
@@ -113,10 +81,6 @@ public class AdminProductController {
         Inventory inventory = inventoryService.updateInventoryQuantity(productId, quantity);
         return ResponseEntity.ok(inventory);
     }
-
-    /**
-     * Add stock to inventory (increment quantity).
-     */
     @PostMapping("/{productId}/inventory/add")
     public ResponseEntity<Inventory> addStock(
             @PathVariable Long productId,
@@ -124,10 +88,6 @@ public class AdminProductController {
         Inventory inventory = inventoryService.addStock(productId, quantity);
         return ResponseEntity.ok(inventory);
     }
-
-    /**
-     * Remove stock from inventory (decrement quantity).
-     */
     @PostMapping("/{productId}/inventory/remove")
     public ResponseEntity<Inventory> removeStock(
             @PathVariable Long productId,

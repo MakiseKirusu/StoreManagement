@@ -14,11 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-
-/**
- * Service for managing products.
- * Handles CRUD operations and search functionality.
- */
+//Service to manage products, handling CRUD opeations and search functionality
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -26,50 +22,34 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final InventoryRepository inventoryRepository;
     private final CategoryService categoryService;
-
-    /**
-     * Get all products with pagination.
-     */
+//Get all products with pagination
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
-
-    /**
-     * Get a product by ID.
-     */
+//Get a product by ID
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
     }
-
-    /**
-     * Search products by name, category, and price range.
-     */
+//Search products by name, category and price range
     public Page<Product> searchProducts(
             String name,
             Long categoryId,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             Pageable pageable) {
-
-        // Set default values if not provided
+        //Default if price is not provided
         if (minPrice == null) minPrice = BigDecimal.ZERO;
         if (maxPrice == null) maxPrice = new BigDecimal("999999.99");
 
         return productRepository.searchProducts(name, categoryId, minPrice, maxPrice, pageable);
     }
-
-    /**
-     * Get products by category.
-     */
+//Get products by category
     public Page<Product> getProductsByCategory(Long categoryId, Pageable pageable) {
         Category category = categoryService.getCategoryById(categoryId);
         return productRepository.findByCategory(category, pageable);
     }
-
-    /**
-     * Create a new product with inventory.
-     */
+//Create a new product with inventory
     @Transactional
     public Product createProduct(ProductRequest request) {
         // Get the category
@@ -82,10 +62,8 @@ public class ProductService {
         product.setPrice(request.getPrice());
         product.setImageUrl(request.getImageUrl());
         product.setCategory(category);
-
         Product savedProduct = productRepository.save(product);
 
-        // Create inventory for the product
         Inventory inventory = new Inventory();
         inventory.setProduct(savedProduct);
         inventory.setStockQuantity(0); // Default quantity is 0
@@ -94,9 +72,6 @@ public class ProductService {
         return savedProduct;
     }
 
-    /**
-     * Update an existing product.
-     */
     @Transactional
     public Product updateProduct(Long id, ProductRequest request) {
         Product product = getProductById(id);
@@ -110,11 +85,7 @@ public class ProductService {
 
         return productRepository.save(product);
     }
-
-    /**
-     * Delete a product by ID.
-     * This will also delete the associated inventory due to cascade settings.
-     */
+//Delete a product by ID, due to cascade settings, associated inventory will also be deleted
     @Transactional
     public void deleteProduct(Long id) {
         Product product = getProductById(id);

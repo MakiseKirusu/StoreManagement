@@ -1,5 +1,9 @@
 package com.store.main.exception;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,20 +14,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Global exception handler for the application.
- * Catches exceptions and returns consistent error responses.
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * Error response structure.
-     */
     private Map<String, Object> buildErrorResponse(String message, HttpStatus status, WebRequest request) {
         Map<String, Object> errorDetails = new HashMap<>();
         errorDetails.put("timestamp", LocalDateTime.now());
@@ -34,9 +27,7 @@ public class GlobalExceptionHandler {
         return errorDetails;
     }
 
-    /**
-     * Handle ResourceNotFoundException (404).
-     */
+    //Resource not found 404
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, Object> handleResourceNotFoundException(
@@ -44,9 +35,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, request);
     }
 
-    /**
-     * Handle BadRequestException (400).
-     */
+    //Bad request 400
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleBadRequestException(
@@ -54,9 +43,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request);
     }
 
-    /**
-     * Handle InsufficientStockException (400).
-     */
+    //Insufficient stock 400
     @ExceptionHandler(InsufficientStockException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleInsufficientStockException(
@@ -64,9 +51,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request);
     }
 
-    /**
-     * Handle DuplicateResourceException (409).
-     */
+    //Duplicated 409
     @ExceptionHandler(DuplicateResourceException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, Object> handleDuplicateResourceException(
@@ -74,9 +59,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), HttpStatus.CONFLICT, request);
     }
 
-    /**
-     * Handle validation errors from @Valid annotations (400).
-     */
+    //Validation errors 400
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleValidationExceptions(
@@ -98,9 +81,7 @@ public class GlobalExceptionHandler {
         return errorDetails;
     }
 
-    /**
-     * Handle bad credentials (401).
-     */
+    //Bad credentials 401
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Map<String, Object> handleBadCredentialsException(
@@ -108,9 +89,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse("Invalid username or password", HttpStatus.UNAUTHORIZED, request);
     }
 
-    /**
-     * Handle access denied (403).
-     */
+    //Access denied 403
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Map<String, Object> handleAccessDeniedException(
@@ -119,13 +98,11 @@ public class GlobalExceptionHandler {
                 HttpStatus.FORBIDDEN, request);
     }
 
-    /**
-     * Handle all other exceptions (500).
-     */
+    //Other exceptions 500
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, Object> handleGlobalException(
-            Exception ex, WebRequest request) {
+        Exception ex, WebRequest request) {
         // Log the exception for debugging
         ex.printStackTrace();
         return buildErrorResponse("An unexpected error occurred: " + ex.getMessage(),

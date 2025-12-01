@@ -1,15 +1,19 @@
 package com.store.main.model;
 
 import com.store.main.model.enums.ERole;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Entity representing a user role in the system.
- * Roles are used for authorization and access control.
- */
 @Entity
 @Table(name = "roles")
 @Data

@@ -1,5 +1,7 @@
 package com.store.main.dto.request;
 
+import java.util.Set;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -7,11 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
-/**
- * DTO for user registration requests.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,10 +26,6 @@ public class RegisterRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 6, max = 120, message = "Password must be between 6 and 120 characters")
     private String password;
-
-    /**
-     * Optional: Roles to assign to the user.
-     * If empty, defaults to ROLE_CUSTOMER.
-     */
+//role assignment, default to customer
     private Set<String> roles;
 }

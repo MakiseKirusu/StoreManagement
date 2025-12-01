@@ -1,7 +1,18 @@
 package com.store.main.model;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 import com.store.main.model.enums.VoucherType;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -10,13 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-/**
- * Entity representing a discount voucher/coupon.
- * Vouchers can provide percentage or fixed amount discounts with minimum spend requirements.
- */
 @Entity
 @Table(name = "vouchers")
 @Data
@@ -36,19 +40,12 @@ public class Voucher {
     @Column(nullable = false, length = 20)
     private VoucherType type;
 
-    /**
-     * Discount value. Interpretation depends on type:
-     * - PERCENT: percentage value (e.g., 10 for 10%)
-     * - FIXED: fixed amount in currency (e.g., 10.00 for $10 off)
-     */
     @NotNull
     @Positive
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal value;
 
-    /**
-     * Minimum order amount required to apply this voucher.
-     */
+    //Minimum spend required to apply the voucher
     @PositiveOrZero
     @Column(name = "min_spend", nullable = false, precision = 10, scale = 2)
     private BigDecimal minSpend = BigDecimal.ZERO;
@@ -57,9 +54,7 @@ public class Voucher {
     @Column(name = "expiry_date", nullable = false)
     private LocalDate expiryDate;
 
-    /**
-     * Check if this voucher is currently valid (not expired).
-     */
+    //check if voucher is still valid
     public boolean isValid() {
         return LocalDate.now().isBefore(expiryDate) || LocalDate.now().isEqual(expiryDate);
     }

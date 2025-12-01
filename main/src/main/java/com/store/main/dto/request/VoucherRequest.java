@@ -1,16 +1,19 @@
 package com.store.main.dto.request;
 
+import java.time.LocalDate;
+
 import com.store.main.model.enums.VoucherType;
-import jakarta.validation.constraints.*;
+
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
-/**
- * DTO for creating/updating vouchers.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

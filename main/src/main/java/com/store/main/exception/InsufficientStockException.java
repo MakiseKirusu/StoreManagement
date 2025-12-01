@@ -1,9 +1,6 @@
 package com.store.main.exception;
 
-/**
- * Exception thrown when trying to order more items than available in stock.
- * Results in HTTP 400 Bad Request response.
- */
+//Insufficient stock = 400 error
 public class InsufficientStockException extends RuntimeException {
 
     public InsufficientStockException(String message) {

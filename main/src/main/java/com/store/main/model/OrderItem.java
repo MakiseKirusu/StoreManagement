@@ -1,17 +1,22 @@
 package com.store.main.model;
 
-import jakarta.persistence.*;
+import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
-/**
- * Entity representing an item within an order.
- * Stores the product details and price at the time of purchase.
- */
+//Storing item details in an order
 @Entity
 @Table(name = "order_items")
 @Data
@@ -35,10 +40,7 @@ public class OrderItem {
     @Column(nullable = false)
     private Integer quantity;
 
-    /**
-     * Price of the product at the time of purchase.
-     * This is stored to maintain accurate historical pricing.
-     */
+    //Price at the time of purchase to maintain historical accuracy of prices
     @Positive
     @Column(name = "price_at_purchase", nullable = false, precision = 10, scale = 2)
     private BigDecimal priceAtPurchase;

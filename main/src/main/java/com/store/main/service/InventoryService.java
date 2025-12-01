@@ -9,31 +9,21 @@ import com.store.main.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-/**
- * Service for managing product inventory.
- * Handles stock tracking and updates.
- */
+//Service to manage product inventory, handling stock tracking and updates
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
     private final ProductService productService;
-
-    /**
-     * Get inventory by product ID.
-     */
+//Get inventory by product ID
     public Inventory getInventoryByProductId(Long productId) {
         Product product = productService.getProductById(productId);
         return inventoryRepository.findByProduct(product)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Inventory", "product_id", productId));
     }
-
-    /**
-     * Update inventory quantity for a product.
-     */
+//Update quantity for a product
     @Transactional
     public Inventory updateInventoryQuantity(Long productId, Integer quantity) {
         if (quantity < 0) {
@@ -44,10 +34,7 @@ public class InventoryService {
         inventory.setStockQuantity(quantity);
         return inventoryRepository.save(inventory);
     }
-
-    /**
-     * Add stock to inventory.
-     */
+//Add stock to inventory
     @Transactional
     public Inventory addStock(Long productId, Integer quantity) {
         if (quantity <= 0) {
@@ -58,11 +45,7 @@ public class InventoryService {
         inventory.setStockQuantity(inventory.getStockQuantity() + quantity);
         return inventoryRepository.save(inventory);
     }
-
-    /**
-     * Remove stock from inventory.
-     * Used during order processing.
-     */
+//Remove stock from inventory, used during order processing
     @Transactional
     public Inventory removeStock(Long productId, Integer quantity) {
         if (quantity <= 0) {
@@ -81,10 +64,7 @@ public class InventoryService {
         inventory.setStockQuantity(inventory.getStockQuantity() - quantity);
         return inventoryRepository.save(inventory);
     }
-
-    /**
-     * Check if sufficient stock is available.
-     */
+//Check if the sufficient stock is available
     public boolean hasStock(Long productId, Integer requiredQuantity) {
         try {
             Inventory inventory = getInventoryByProductId(productId);

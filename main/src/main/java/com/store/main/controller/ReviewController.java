@@ -1,22 +1,26 @@
 package com.store.main.controller;
 
-import com.store.main.dto.request.ReviewRequest;
-import com.store.main.model.Review;
-import com.store.main.service.ReviewService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Controller for product reviews.
- * Handles creating, viewing, and deleting reviews with purchase verification.
- */
+import com.store.main.dto.request.ReviewRequest;
+import com.store.main.model.Review;
+import com.store.main.service.ReviewService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
@@ -24,9 +28,6 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    /**
-     * Create a review for a product (requires verified purchase).
-     */
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Review> createReview(
@@ -37,9 +38,6 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).body(review);
     }
 
-    /**
-     * Get all reviews for a specific product (public endpoint).
-     */
     @GetMapping("/product/{productId}")
     public ResponseEntity<Page<Review>> getProductReviews(
             @PathVariable Long productId,
@@ -48,18 +46,12 @@ public class ReviewController {
         return ResponseEntity.ok(reviews);
     }
 
-    /**
-     * Get average rating for a product (public endpoint).
-     */
     @GetMapping("/product/{productId}/rating")
     public ResponseEntity<Double> getAverageRating(@PathVariable Long productId) {
         Double avgRating = reviewService.getAverageRating(productId);
         return ResponseEntity.ok(avgRating != null ? avgRating : 0.0);
     }
 
-    /**
-     * Get user's own reviews.
-     */
     @GetMapping("/my-reviews")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Page<Review>> getUserReviews(
@@ -69,10 +61,7 @@ public class ReviewController {
         Page<Review> reviews = reviewService.getUserReviews(username, pageable);
         return ResponseEntity.ok(reviews);
     }
-
-    /**
-     * Delete a review.
-     */
+    
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Void> deleteReview(

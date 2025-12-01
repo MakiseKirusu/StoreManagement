@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO for creating/updating categories.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

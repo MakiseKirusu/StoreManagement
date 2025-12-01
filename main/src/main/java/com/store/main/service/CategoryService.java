@@ -10,38 +10,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-/**
- * Service for managing product categories.
- * Handles CRUD operations for categories.
- */
+//Service to manage product categories, handling CRUD operations
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-
-    /**
-     * Get all categories.
-     */
+//Get all categories
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
-
-    /**
-     * Get a category by ID.
-     */
+//Get the category by ID
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
     }
-
-    /**
-     * Create a new category.
-     */
+//Create a new category
     @Transactional
     public Category createCategory(CategoryRequest request) {
-        // Check if category with same name already exists
         if (categoryRepository.existsByName(request.getName())) {
             throw new DuplicateResourceException("Category", "name", request.getName());
         }
@@ -51,14 +37,10 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    /**
-     * Update an existing category.
-     */
     @Transactional
     public Category updateCategory(Long id, CategoryRequest request) {
         Category category = getCategoryById(id);
-
-        // Check if another category with the new name exists
+        //Check if a category with the new name already exists
         if (!category.getName().equals(request.getName()) &&
             categoryRepository.existsByName(request.getName())) {
             throw new DuplicateResourceException("Category", "name", request.getName());
@@ -67,10 +49,7 @@ public class CategoryService {
         category.setName(request.getName());
         return categoryRepository.save(category);
     }
-
-    /**
-     * Delete a category by ID.
-     */
+//Delete a category by ID
     @Transactional
     public void deleteCategory(Long id) {
         Category category = getCategoryById(id);
