@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-/**
- * DTO for product responses to avoid Hibernate lazy-loading issues.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,10 +18,7 @@ public class ProductResponse {
     private String imageUrl;
     private Long categoryId;
     private String categoryName;
-
-    /**
-     * Create ProductResponse from Product entity.
-     */
+    
     public static ProductResponse fromProduct(Product product) {
         ProductResponse response = new ProductResponse();
         response.setId(product.getId());
