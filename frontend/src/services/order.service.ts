@@ -14,7 +14,7 @@ class OrderService {
     return response.data
   }
 
-  // Alias for consistency
+
   async getMyOrders(params: { page?: number; size?: number } = {}): Promise<PaginatedResponse<Order>> {
     const { page = 0, size = 10 } = params
     return this.getOrderHistory(page, size)
@@ -30,7 +30,7 @@ class OrderService {
     return response.data
   }
 
-  // Admin endpoints
+  // Admin 
   async getAllOrders(params: { page?: number; size?: number } = {}): Promise<PaginatedResponse<Order>> {
     const { page = 0, size = 20 } = params
     const response = await api.get<PaginatedResponse<Order>>('/api/admin/orders', {
